@@ -128,11 +128,11 @@ function Home({ items, parts, state, setRoute, setActivePart }) {
   return <>
     <section className="hero-panel">
       <div>
-        <p className="eyebrow">Lesson 4B</p>
+        <p className="eyebrow">Dutch A1</p>
         <h1>Practice Dutch out loud.</h1>
         <p className="hero-copy">Study key phrases, listen to Dutch pronunciation, and test by speaking.</p>
       </div>
-      <button className="round-play" type="button" onClick={() => window.ReadySpeech.speak("Hoe laat is het?")} aria-label="Play sample">
+      <button className="round-play" type="button" onClick={() => window.ReadySpeech.speak("Goedemorgen, hoe gaat het?")} aria-label="Play sample">
         <Icon name="Volume2" size={24} />
       </button>
     </section>
@@ -150,18 +150,22 @@ function Home({ items, parts, state, setRoute, setActivePart }) {
       <ActionCard icon="ListChecks" title="My List" desc="Review saved phrases and your to-do queue." onClick={() => setRoute("list")} />
     </section>
 
-    <section>
-      <Header title="Parts" />
-      <div className="part-grid">
-        {parts.map(part => (
-          <button key={part.id} className="part-tile" type="button" onClick={() => { setActivePart(part.id); setRoute("study"); }}>
-            <span>{part.title}</span>
-            <strong>{part.label}</strong>
-            <em>{part.count} items</em>
-          </button>
-        ))}
-      </div>
-    </section>
+    {window.LESSONS.map(lesson => {
+      const lessonParts = parts.filter(p => p.lessonId === lesson.id);
+      const lessonTotal = lessonParts.reduce((s, p) => s + p.count, 0);
+      return <section key={lesson.id}>
+        <Header title={lesson.title} right={<span className="count-pill">{lessonTotal} items</span>} />
+        <div className="part-grid">
+          {lessonParts.map(part => (
+            <button key={part.id} className="part-tile" type="button" onClick={() => { setActivePart(part.id); setRoute("study"); }}>
+              <span>{part.title}</span>
+              <strong>{part.label}</strong>
+              <em>{part.count} items</em>
+            </button>
+          ))}
+        </div>
+      </section>;
+    })}
   </>;
 }
 
@@ -305,7 +309,7 @@ function Test({ items, parts, activePart, setActivePart, state, setState }) {
   if (!list.length) {
     return <>
       <Header title="Test" />
-      <EmptyState icon="MicOff" title="No items here" desc="Pick another part or add Lesson 4B content first." />
+      <EmptyState icon="MicOff" title="No items here" desc="Pick a lesson part from the Home screen to get started." />
     </>;
   }
 
